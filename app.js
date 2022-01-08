@@ -92,8 +92,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
+app.get("/address", auth, (req, res) => {
+  res.status(200).json({
+    success: "true",
+    message: "User's addresses",
+    data: req.user.address,
+  });
 });
 
 // This should be the last route else any after it won't work
