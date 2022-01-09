@@ -3,6 +3,7 @@ require("./config/database").connect();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const config = process.env;
 
 const User = require("./model/user");
 const auth = require("./middleware/auth");
@@ -92,11 +93,24 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/address", auth, (req, res) => {
+app.get("/address", auth, async (req, res) => {
+  const user = await User.findOne({ phone: req.user.phone });
   res.status(200).json({
     success: "true",
     message: "User's addresses",
-    data: req.user.address,
+    data: user.address,
+  });
+});
+
+app.post("/address", auth, async (req, res) => {
+  const user = await User.findOne({ phone: req.user.phone });
+  await User.findOneAndUpdate(
+    { phone: req.user.phone },
+    { $set: { address: user.address.concat(req.body.address) } }
+  );
+  res.status(200).json({
+    success: "true",
+    message: "Address Added",
   });
 });
 
