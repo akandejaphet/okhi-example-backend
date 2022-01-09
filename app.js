@@ -120,12 +120,32 @@ app.post("/webhook", async (req, res) => {
   const profile = req.body.verification_profile;
   const status = profile?.result?.status;
 
-  console.log(req);
-
   if (!status) {
     // stop
     return res.status(200);
   }
+
+  const user = await User.findOne({ phone: req?.body?.user?.phone });
+  var currentAddress = user.address.filter(
+    (x) => x.id === req?.body?.location?.id
+  )[0];
+  currentAddress.status = status;
+  await User.findOneAndUpdate(
+    { phone: req?.body?.user?.phone },
+    {
+      $set: {
+        address: user.address
+          .filter((x) => x.id !== req?.body?.location?.id)
+          .concat(currentAddress),
+      },
+    }
+  );
+
+  res.status(200).json({
+    success: "true",
+    message: "Status Updated",
+  });
+  return;
 
   switch (status) {
     case "in_progress":
@@ -143,10 +163,6 @@ app.post("/webhook", async (req, res) => {
     default:
       console.log(`Unhandled event type ${status}`);
   }
-  res.status(200).json({
-    success: "true",
-    message: "Status Updated",
-  });
 });
 
 // This should be the last route else any after it won't work
