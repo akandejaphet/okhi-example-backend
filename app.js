@@ -117,12 +117,14 @@ app.post("/address", auth, async (req, res) => {
 app.post("/webhook", async (req, res) => {
   // Retrieve the request's body
   // Validate custom headers
-  const profile = request.body.verification_profile;
+  const profile = req.body.verification_profile;
   const status = profile?.result?.status;
+
+  console.log(req);
 
   if (!status) {
     // stop
-    return response.sendStatus(200);
+    return res.status(200);
   }
 
   switch (status) {
