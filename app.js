@@ -99,6 +99,7 @@ app.get("/address", auth, async (req, res) => {
     success: "true",
     message: "User's addresses",
     data: user.address,
+    user,
   });
 });
 
