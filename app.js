@@ -114,6 +114,39 @@ app.post("/address", auth, async (req, res) => {
   });
 });
 
+app.post("/webhook", async (req, res) => {
+  // Retrieve the request's body
+  // Validate custom headers
+  const profile = request.body.verification_profile;
+  const status = profile?.result?.status;
+
+  if (!status) {
+    // stop
+    return response.sendStatus(200);
+  }
+
+  switch (status) {
+    case "in_progress":
+      // Then define and call a method to handle the verification in progress status
+      // handleVerificationInProgress()
+      break;
+    case "verified":
+      // Then define and call a method to handle the successful verification status
+      // handleVerificationSuccessful()
+      break;
+    case "unverifiable":
+      // Then define and call a method to handle the unverifiable verification status
+      // handleVerificationFailed()
+      break;
+    default:
+      console.log(`Unhandled event type ${status}`);
+  }
+  res.status(200).json({
+    success: "true",
+    message: "Status Updated",
+  });
+});
+
 // This should be the last route else any after it won't work
 app.use("*", (req, res) => {
   res.status(404).json({
